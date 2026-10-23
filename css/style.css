@@ -286,3 +286,14 @@ canvas{display:block}
 #optPanel .tabbtn:focus-visible{outline:2px solid #7feaff;outline-offset:3px;}
 @media (prefers-reduced-motion:reduce){.mitem,#optPanel .tabbtn{transition-duration:.01ms!important}}
 .noanim .mitem.on{transform:rotate(var(--r)) scale(1.035)}
+
+
+/* Áudio pessoal: importação local no navegador, sem enviar mídia ao repositório. */
+#optPanel .audio-import{margin:4px 12px 0;padding:10px 12px 8px;background:#050a18e8;border-left:4px solid var(--red);}
+#optPanel .audio-import-title{font:600 15px Mont;letter-spacing:2px;color:#b8d5ff;margin-bottom:7px;}
+#optPanel .audio-import-buttons{display:flex;gap:8px;align-items:stretch;}
+#optPanel .audio-import-btn{flex:1;min-width:0;padding:8px 10px;background:#f4f6fb;color:#09132e;border:1px solid #fff;transform:skewX(-6deg);font:600 13px Mont;letter-spacing:.5px;box-shadow:4px 4px 0 var(--red);transition:transform .14s,background .14s,color .14s;}
+#optPanel .audio-import-btn:hover{background:var(--blue);color:#050a18;transform:skewX(-6deg) translateY(-2px);}
+#optPanel .audio-import-btn:active{transform:skewX(-6deg) scale(.97);box-shadow:2px 2px 0 var(--red);}
+#optPanel .audio-import-btn.sub{flex:.5;background:#0a1434;color:#dce8ff;border-color:#4a8fff;box-shadow:4px 4px 0 #12336f;}
+#optPanel .audio-import-status{margin-top:7px;font:300 12px/1.35 Mont;color:#b6c4e5;min-height:16px;}

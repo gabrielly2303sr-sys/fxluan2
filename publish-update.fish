@@ -34,9 +34,11 @@ git -C "$target" pull --ff-only origin main; or begin
     echo "ERRO: a branch main tem alterações divergentes; não fiz push para evitar sobrescrever conteúdo."; exit 1
 end
 
-# Remove the old optional external SFX folder from the remote clone if it was ever committed.
-# The public build uses the original bundled effects in assets/audio/fxluan2-sfx/ instead.
+# Remove any previously tracked private/local-only audio from the remote clone.
+# The exact user's MP3 and user-provided WAV pack remain local / browser-imported;
+# this public package keeps only the original project fallback audio.
 rm -rf "$target/assets/audio/p3r-sfx"
+git -C "$target" rm -r --cached --ignore-unmatch assets/audio/local-pack assets/audio/full-moon-full-life.mp3 >/dev/null 2>&1
 
 # Copy the extracted package over the clone. This package has no .git directory.
 cp -a "$project"/. "$target"/; or begin
@@ -66,7 +68,7 @@ if not git -C "$target" config --local user.email >/dev/null 2>&1
     git -C "$target" config --local user.email "$uid+$login@users.noreply.github.com"; or exit 1
 end
 
-git -C "$target" commit -m "Bundle ARCANA LAB UI sound effects"; or exit 1
+git -C "$target" commit -m "Add browser audio import and local custom SFX"; or exit 1
 git -C "$target" push origin main; or begin
     echo "ERRO: o commit foi criado no clone temporário, mas o push falhou. Veja a mensagem do Git acima."; exit 1
 end

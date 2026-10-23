@@ -25,7 +25,12 @@ window.ARCANA_TEXT = {
     },
     audio: {
       musicName: 'Música de fundo', musicDesc: 'Trilha musical em loop durante os menus e o jogo.',
-      effectsName: 'Efeitos sonoros', effectsDesc: 'Sons de navegação, confirmação, acerto, erro e progressão.'
+      effectsName: 'Efeitos sonoros', effectsDesc: 'Sons de navegação, confirmação, acerto, erro e progressão.',
+      importTitle: 'ÁUDIO PERSONALIZADO', importMusic: 'IMPORTAR MP3', importZip: 'IMPORTAR ZIP SFX', importWavs: 'IMPORTAR WAVs',
+      importIntro: 'Escolha os arquivos uma vez. Eles ficam salvos só neste navegador, sem serem enviados ao GitHub.',
+      importingMusic: 'Importando música…', musicImported: 'Música importada e salva neste navegador.',
+      importingSfx: 'Lendo o ZIP de efeitos…', sfxImported: '{count} efeitos importados e salvos neste navegador.',
+      importingWavs: 'Importando WAVs…', sfxFallbackHint: 'Também é possível extrair o ZIP e selecionar os WAVs.'
     },
     difficulty: { easy: 'FÁCIL', medium: 'MÉDIO', hard: 'DIFÍCIL' },
     hints: [['ESC', 'VOLTAR'], ['↑ ↓', 'NAVEGAR'], ['ENTER', 'CONFIRMAR']],

@@ -35,13 +35,13 @@
     requestAnimationFrame(() => requestAnimationFrame(() => bars.querySelectorAll('.obar').forEach((b, i) => setTimeout(() => b.classList.add('mount'), Prefs.get('anim') ? i * 70 : 0))));
   }
   const syncBars = () => bars.querySelectorAll('.obar').forEach((b, i) => b.classList.toggle('act', i === S.act));
-  function reveal() { S.rev = true; S.row = 0; S.opening = true; Sound.click(); renderPanel(); }
+  function reveal() { S.rev = true; S.row = 0; S.opening = true; Sound.open(); renderPanel(); }
   function renderPanel() {
     panel.classList.toggle('show', S.rev);
     if (!S.rev) { panel.classList.remove('opening'); panel.innerHTML = ''; return; }
     const B = BARS[S.act], r = B.rows[S.row];
     panel.classList.toggle('opening', S.opening);
-    panel.innerHTML = `<div class="tint"></div><img class="portrait" alt="" src="${B.char}"><div class="card"><div class="tabs">${BARS.map((b, i) => `<button class="tabbtn${i === S.act ? ' act' : ''}" data-t="${i}" aria-pressed="${i === S.act}">${b.label}</button>`).join('')}</div><div class="upper"><b style="font-weight:600">${r.name}</b><br>${r.desc}</div>${B.rows.map((x, i) => { const v = x.k === '__play' ? true : Prefs.get(x.k), on = x.bool ? v : true; return `<div class="urow${x.action ? ' big' : ''}${i === S.row ? ' sel' : ''}${on ? ' on' : ''}" data-r="${i}" tabindex="0" role="button"><span>${x.action ? T.settings.playButtonPrefix : ''}${x.name}</span><span>${x.action ? '' : x.bool ? (v ? T.common.enabled : T.common.disabled) : x.val(v)}</span></div>`; }).join('')}</div>`;
+    panel.innerHTML = `<div class="tint"></div><img class="portrait" alt="" src="${B.char}"><div class="card"><div class="tabs">${BARS.map((b, i) => `<button class="tabbtn${i === S.act ? ' act' : ''}" data-t="${i}" aria-pressed="${i === S.act}">${b.label}</button>`).join('')}</div><div class="upper"><b style="font-weight:600">${r.name}</b><br>${r.desc}</div>${B.rows.map((x, i) => { const v = x.k === '__play' ? true : Prefs.get(x.k), on = x.bool ? v : true; return `<div class="urow${x.action ? ' big' : ''}${i === S.row ? ' sel' : ''}${on ? ' on' : ''}" data-r="${i}" tabindex="0" role="button"><span>${x.action ? T.settings.playButtonPrefix : ''}${x.name}</span><span>${x.action ? '' : x.bool ? (v ? T.common.enabled : T.common.disabled) : x.val(v)}</span></div>`; }).join('')}${S.act === 2 ? `<div class="audio-import"><div class="audio-import-title">${T.settings.audio.importTitle}</div><div class="audio-import-buttons"><button type="button" class="audio-import-btn" data-import="music">${T.settings.audio.importMusic}</button><button type="button" class="audio-import-btn" data-import="zip">${T.settings.audio.importZip}</button><button type="button" class="audio-import-btn sub" data-import="wavs">${T.settings.audio.importWavs}</button></div><input id="arcanaMusicFile" type="file" accept=".mp3,audio/mpeg" hidden><input id="arcanaSfxZip" type="file" accept=".zip,application/zip" hidden><input id="arcanaSfxWavs" type="file" accept=".wav,audio/wav" multiple hidden><div class="audio-import-status" aria-live="polite">${T.settings.audio.importIntro}</div></div>` : ''}</div>`;
     if (S.opening) {
       const card = panel.querySelector('.card');
       card.addEventListener('animationend', () => panel.classList.remove('opening'), { once: true });
@@ -51,10 +51,45 @@
       b.addEventListener('mouseenter', () => { if (+b.dataset.t !== S.act) Sound.hover(); });
       b.addEventListener('click', () => {
         const next = +b.dataset.t;
-        if (next === S.act) { Sound.click(); return; }
-        S.act = next; S.row = 0; Sound.click(); syncBars(); renderPanel();
+        if (next === S.act) { Sound.misc(); return; }
+        S.act = next; S.row = 0; Sound.misc(); syncBars(); renderPanel();
       });
     });
+    if (S.act === 2) {
+      const musicInput = panel.querySelector('#arcanaMusicFile');
+      const zipInput = panel.querySelector('#arcanaSfxZip');
+      const wavInput = panel.querySelector('#arcanaSfxWavs');
+      const status = panel.querySelector('.audio-import-status');
+      const updateStatus = (message) => { if (status) status.textContent = message; };
+      panel.querySelectorAll('[data-import]').forEach((button) => button.addEventListener('click', () => {
+        Sound.click();
+        const kind = button.dataset.import;
+        if (kind === 'music') musicInput.click();
+        else if (kind === 'zip') zipInput.click();
+        else wavInput.click();
+      }));
+      musicInput.addEventListener('change', async () => {
+        const file = musicInput.files && musicInput.files[0]; if (!file) return;
+        updateStatus(T.settings.audio.importingMusic);
+        try { await Sound.importMusic(file); updateStatus(T.settings.audio.musicImported); Sound.click(); }
+        catch (error) { updateStatus(error.message || 'Não foi possível importar a música.'); }
+        musicInput.value = '';
+      });
+      zipInput.addEventListener('change', async () => {
+        const file = zipInput.files && zipInput.files[0]; if (!file) return;
+        updateStatus(T.settings.audio.importingSfx);
+        try { const count = await Sound.importSfxZip(file); updateStatus(T.settings.audio.sfxImported.replace('{count}', count)); Sound.click(); }
+        catch (error) { updateStatus((error.message || 'Falha ao importar SFX.') + ' ' + T.settings.audio.sfxFallbackHint); }
+        zipInput.value = '';
+      });
+      wavInput.addEventListener('change', async () => {
+        const files = wavInput.files; if (!files || !files.length) return;
+        updateStatus(T.settings.audio.importingWavs);
+        try { const count = await Sound.importWavFiles(files); updateStatus(T.settings.audio.sfxImported.replace('{count}', count)); Sound.click(); }
+        catch (error) { updateStatus(error.message || 'Não foi possível importar os WAVs.'); }
+        wavInput.value = '';
+      });
+    }
     const updateRow = (i, playSound = true) => {
       if (S.row === i) return;
       S.row = i;
@@ -71,7 +106,7 @@
       b.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(+b.dataset.r); } });
     });
   }
-  function toggle(i) { const x = BARS[S.act].rows[i]; S.row = i; if (x.action) { Sound.click(); AL.Calendar.open(); return; } Prefs.set(x.k, x.bool ? !Prefs.get(x.k) : x.next(Prefs.get(x.k))); Sound.click(); renderPanel(); }
+  function toggle(i) { const x = BARS[S.act].rows[i]; S.row = i; if (x.action) { Sound.click(); AL.Calendar.open(); return; } if (x.bool) { const next = !Prefs.get(x.k); Prefs.set(x.k, next); next ? Sound.toggleOn() : Sound.toggleOff(); } else { Prefs.set(x.k, x.next(Prefs.get(x.k))); Sound.sliderUp(); } renderPanel(); }
   function key(e) {
     if (AL.busy) return false; const k = e.key, n = BARS.length;
     if (k === 'Escape') { if (S.rev) { S.rev = false; Sound.back(); renderPanel(); } else Settings.close(); return true; }
@@ -92,11 +127,11 @@
   $('#settingsStage').addEventListener('click', (e) => { if (e.target.id === 'settingsStage' && !AL.busy) Settings.close(); });
   const Settings = {
     open() {
-      AL.busy = true;
+      AL.busy = true; Sound.sideMenuIn();
       transition(() => { AL.Menu.suspend(); S.act = 0; S.rev = true; S.opening = true; S.row = 0; renderBars(); renderPanel(); AL.show('settings', true); AL.seekVideo(vOpt, 0); AL.playVideo(vOpt); AL.keys.current = key; }).then(() => { AL.busy = false; });
     },
     close() {
-      AL.busy = true; Sound.back();
+      AL.busy = true; Sound.outOfGame();
       transition(() => { vOpt.pause(); AL.show('settings', false); if (AL.visible('menu')) AL.Menu.resume(); else AL.mainMenu(); }).then(() => { AL.busy = false; });
     }
   };

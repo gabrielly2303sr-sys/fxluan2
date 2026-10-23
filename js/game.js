@@ -168,7 +168,7 @@
 
   const Game = {
     start(phase, keepScore) {
-      if (!built) build(); AL.show('game', true); G.phase = phase; Sound.phase(); if (!keepScore) { G.score = 0; G.streak = 0; G.shown = 0; $('#gScore').textContent = 0; }
+      if (!built) build(); AL.show('game', true); G.phase = phase; Sound.intoGame(); Sound.phase(); if (!keepScore) { G.score = 0; G.streak = 0; G.shown = 0; $('#gScore').textContent = 0; }
       $('#gOver').classList.add('hidden'); G.revealed = false; newChallenge(); G.running = true; G.last = performance.now(); AL.keys.current = gkey;
       Sound.duck = true; Sound.syncMusic(); clearInterval(timerId); timerId = setInterval(tick, 250);
       // reanima a entrada dos painéis

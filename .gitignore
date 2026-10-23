@@ -9,5 +9,6 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Local-only commercial music file; never commit it.
+# Personal audio imported from the user's own files/browser. Keep out of public Git.
+assets/audio/local-pack/
 assets/audio/full-moon-full-life.mp3

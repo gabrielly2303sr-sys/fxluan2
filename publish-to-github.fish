@@ -48,7 +48,7 @@ git add .; or exit 1
 if git diff --cached --quiet
     echo "Não há arquivos novos para commit."
 else
-    git commit -m "Initial commit: ARCANA LAB Enhanced r7"; or exit 1
+    git commit -m "Initial commit: ARCANA LAB Enhanced r8"; or exit 1
 end
 
 gh repo create "$repo_name" --public --source . --remote origin --push; or exit 1

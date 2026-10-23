@@ -7,7 +7,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parent
 PORTS = range(8080, 8101)
-BUILD = "Enhanced 2026.10.23-r7"
+BUILD = "Enhanced 2026.10.23-r8"
 
 
 class NoCacheHandler(SimpleHTTPRequestHandler):
@@ -34,7 +34,7 @@ def main():
         print(f"Erro ao iniciar ARCANA LAB: {exc}")
         raise SystemExit(1)
 
-    url = f"http://127.0.0.1:{server.server_port}/?build=enhanced-20261023-r7"
+    url = f"http://127.0.0.1:{server.server_port}/?build=enhanced-20261023-r8"
     print(f"ARCANA LAB — {BUILD}", flush=True)
     print(f"Servidor iniciado em: {url}", flush=True)
     print("Esta URL é local; 127.0.0.1 não é o número da versão.", flush=True)
