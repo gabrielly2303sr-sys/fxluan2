@@ -17,20 +17,15 @@
     apply() { document.body.classList.toggle('hc', !!prefs.contrast); document.body.classList.toggle('noanim', !prefs.anim); }
   };
 
-  /* ---------- áudio resiliente: SFX locais opcionais + fallback original ---------- */
+  /* ---------- áudio local empacotado + fallback original ---------- */
   const NAMES = ['hover', 'click', 'back', 'good', 'bad', 'tick', 'hint', 'whoosh', 'open', 'clear', 'phase', 'unlock'];
   const VOL = { hover: .32, click: .52, back: .42, good: .7, bad: .5, tick: .22, hint: .55, whoosh: .42, open: .4, clear: .8, phase: .48, unlock: .72 };
-  const P3R_FILES = {
-    hover: 'deck_ui_navigation.wav', click: 'deck_ui_default_activation.wav', back: 'deck_ui_hide_modal.wav',
-    good: 'deck_ui_achievement_toast.wav', bad: 'deck_ui_switch_toggle_off.wav', tick: 'deck_ui_volume.wav',
-    hint: 'deck_ui_toast.wav', whoosh: 'deck_ui_side_menu_fly_in.wav', open: 'deck_ui_show_modal.wav',
-    clear: 'deck_ui_achievement_toast.wav', phase: 'deck_ui_launch_game.wav', unlock: 'deck_ui_toast.wav'
+  const SFX_DIR = 'assets/audio/fxluan2-sfx/';
+  const SFX_FILES = {
+    hover: 'hover.wav', click: 'click.wav', back: 'back.wav', good: 'good.wav', bad: 'bad.wav',
+    tick: 'tick.wav', hint: 'hint.wav', whoosh: 'whoosh.wav', open: 'open.wav', clear: 'clear.wav',
+    phase: 'phase.wav', unlock: 'unlock.wav'
   };
-  const P3R_DIR = 'assets/audio/p3r-sfx/';
-  const p3rAvailable = {};
-  Object.keys(P3R_FILES).forEach((n) => {
-    p3rAvailable[n] = fetch(P3R_DIR + P3R_FILES[n], { method: 'HEAD', cache: 'no-store' }).then((r) => r.ok).catch(() => false);
-  });
   function playOne(src, volume) {
     try {
       const a = new Audio(src); a.preload = 'auto'; a.volume = volume; a.defaultPlaybackRate = 1; a.playbackRate = 1;
@@ -39,14 +34,22 @@
       a.addEventListener('ended', () => { a.src = ''; }, { once: true });
     } catch (e) { /* som opcional; não interrompe a interface */ }
   }
+  function playSfx(name, volume) {
+    const fallback = 'assets/audio/' + name + '.ogg';
+    const src = SFX_DIR + SFX_FILES[name];
+    let fallbackUsed = false;
+    const useFallback = () => { if (!fallbackUsed) { fallbackUsed = true; playOne(fallback, volume); } };
+    try {
+      const a = new Audio(src); a.preload = 'auto'; a.volume = volume; a.defaultPlaybackRate = 1; a.playbackRate = 1;
+      if ('preservesPitch' in a) a.preservesPitch = true;
+      a.addEventListener('error', useFallback, { once: true });
+      a.addEventListener('ended', () => { a.src = ''; }, { once: true });
+      const p = a.play(); if (p && p.catch) p.catch(useFallback);
+    } catch (e) { useFallback(); }
+  }
   const Sound = { music: null, loadingMusic: null };
   NAMES.forEach((n) => {
-    Sound[n] = () => {
-      if (!prefs.sound) return;
-      const fallback = 'assets/audio/' + n + '.ogg';
-      if (!P3R_FILES[n]) { playOne(fallback, VOL[n]); return; }
-      p3rAvailable[n].then((ok) => playOne(ok ? P3R_DIR + P3R_FILES[n] : fallback, VOL[n]));
-    };
+    Sound[n] = () => { if (prefs.sound) playSfx(n, VOL[n]); };
   });
   const CUSTOM_MUSIC = 'assets/audio/full-moon-full-life.mp3';
   const MUSIC_FALLBACK = 'assets/audio/music.ogg';

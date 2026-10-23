@@ -1,8 +1,9 @@
 #!/usr/bin/env fish
-# Creates a PRIVATE GitHub repository named fxluan2 and pushes this project.
+# Creates a PUBLIC GitHub repository named fxluan2 and pushes this project.
 # Run this from the extracted project directory: ./publish-to-github.fish
 
-cd (dirname (status --current-filename))
+set -l project (cd (dirname (status --current-filename)); and pwd)
+cd "$project"
 
 if not command -q git
     echo "ERRO: Git não está instalado. Instale git e tente novamente."
@@ -24,9 +25,8 @@ if test -z "$owner"
     exit 1
 end
 if gh repo view "$owner/$repo_name" >/dev/null 2>&1
-    echo "O repositório $owner/$repo_name já existe. Não fiz alterações nele para evitar sobrescrever seu conteúdo."
-    echo "Se quiser enviar este projeto para esse repositório existente, confira o remoto e envie manualmente."
-    exit 1
+    echo "O repositório $owner/$repo_name já existe; vou publicar a atualização nele."
+    exec fish "$project/publish-update.fish"
 end
 
 if not git rev-parse --is-inside-work-tree >/dev/null 2>&1
@@ -48,9 +48,9 @@ git add .; or exit 1
 if git diff --cached --quiet
     echo "Não há arquivos novos para commit."
 else
-    git commit -m "Initial commit: ARCANA LAB Enhanced r6"; or exit 1
+    git commit -m "Initial commit: ARCANA LAB Enhanced r7"; or exit 1
 end
 
-gh repo create "$repo_name" --private --source . --remote origin --push; or exit 1
+gh repo create "$repo_name" --public --source . --remote origin --push; or exit 1
 echo "Concluído: https://github.com/$owner/$repo_name"
-echo "O repositório foi criado como PRIVADO."
+echo "O repositório foi criado como PÚBLICO. Todos os arquivos rastreados podem ser vistos por qualquer pessoa."
