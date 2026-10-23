@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="arcana-build" content="enhanced-20261022-r6">
+<title>ARCANA LAB — Enhanced r6</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- Camada do menu (menu principal e pausa usam o MESMO componente) -->
+<div id="menuLayer" class="layer hidden">
+  <img id="seq" alt="" src="assets/frames/f00.webp">
+  <video id="vIntro" muted playsinline preload="auto"><source src="assets/video/menu-intro.mp4" type="video/mp4"><source src="assets/video/menu-intro.webm" type="video/webm"></video>
+  <video id="vLoop" muted playsinline loop preload="auto"><source src="assets/video/menu-loop.mp4" type="video/mp4"><source src="assets/video/menu-loop.webm" type="video/webm"></video>
+  <div class="stage"><div id="menuItems"></div></div>
+</div>
+
+<!-- Configurações (Options.qml) -->
+<div id="settingsLayer" class="layer hidden">
+  <video id="vOpt" muted playsinline loop preload="none"><source src="assets/video/options-blur.mp4" type="video/mp4"><source src="assets/video/options-blur.webm" type="video/webm"></video>
+  <div class="stage" id="settingsStage">
+    <div id="optBars"></div>
+    <div id="optPanel"></div>
+    <div class="keyhints" id="optHints"></div>
+  </div>
+</div>
+
+<!-- Calendário de fases (Calendar.qml) -->
+<div id="calLayer" class="layer hidden"><div class="stage" id="calStage"></div></div>
+
+<!-- Explicação (Resume.qml) -->
+<div id="explainLayer" class="layer hidden">
+  <video id="vRes" muted playsinline loop preload="none"><source src="assets/video/resume.mp4" type="video/mp4"><source src="assets/video/resume.webm" type="video/webm"></video>
+  <div class="stage" id="explainStage"></div>
+</div>
+
+<!-- Jogo -->
+<div id="gameLayer" class="layer hidden">
+  <div class="gbg"></div>
+  <div class="stage" id="gameStage"></div>
+</div>
+
+<!-- Saída -->
+<div id="exitLayer" class="layer hidden">
+  <div class="stage">
+    <div class="exitbox"><h1 id="exitTitle"></h1><p id="exitBody"></p>
+      <button class="pbtn" id="exitBack"><span id="exitBackText"></span></button></div>
+  </div>
+</div>
+
+<!-- Transição P3R (P3rTransition2.qml) -->
+<div id="trans" class="hidden"><i></i><b></b><b></b><b></b></div>
+
+<script src="js/texts.js"></script>
+<script src="js/math.js"></script>
+<script src="js/core.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/screens.js"></script>
+<script src="js/calendar.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
